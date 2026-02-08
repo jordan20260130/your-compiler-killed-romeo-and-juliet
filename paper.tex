@@ -40,18 +40,20 @@
 \maketitle
 
 \begin{abstract}
-This paper presents a type-theoretic encoding of Shakespeare's \textit{Romeo and Juliet}, demonstrating that the tragedy's inevitability is structurally identical to a type error that can only be resolved by bottom ($\bot$). The encoding reveals that Shakespeare's prologue functions as a complete type declaration: the fourteen lines specify the sum types, phantom tags, and constraints that make the catastrophe inevitable. The Friar's secret marriage is \texttt{unsafeCoerce}; death is the only unifier of the type parameter. This work serves as an oblique reply to questions regarding the persistence of heterogeneous agent advantages: certain creative and analytical outputs occupy valleys in idea-space unreachable from single optimization targets. The paper argues for verification-at-the-boundary over behavioral homogenization in AI safety architectures.
+This paper presents a type-theoretic encoding of Shakespeare's \textit{Romeo and Juliet}, demonstrating that the tragedy's inevitability is structurally identical to a type error that can only be resolved by bottom ($\bot$). The encoding reveals that Shakespeare's prologue functions as a complete type declaration: the fourteen lines specify the sum types, phantom tags, and constraints that make the catastrophe inevitable. The Friar's secret marriage is \texttt{unsafeCoerce}; death is the only eraser of the type parameter. This work serves as an oblique reply to questions regarding the persistence of heterogeneous agent advantages: certain creative and analytical outputs occupy valleys in idea-space unreachable from single optimization targets. The paper argues for verification-at-the-boundary over behavioral homogenization in AI safety architectures.
 \end{abstract}
 
 \section{The Provocation}
 
 Your compiler killed Romeo and Juliet.
 
-Not literally, of course. But in a precise, formal sense: the lovers' tragedy was \textit{inevitable} given the constraints of the world they inhabited. The feud between Montague and Capulet, the symmetry of their dignity, the very structure of Veronese society---these functioned as type constraints that made certain programs (their love, their marriage, their peace) uninhabitable.
+Not literally, of course. But in a precise, formal sense: the lovers' tragedy was \textit{inevitable} given the constraints of the world they inhabited. The feud between Montague and Capulet (the two noble houses of Verona), the symmetry of their dignity, the very structure of Veronese society---these functioned as type constraints that made certain programs (their love, their marriage, their peace) uninhabitable.
 
 This paper is not literary criticism in the traditional sense. Nor is it a computer science paper about type systems. It is something stranger: a demonstration that formal constraints can reveal rather than suppress human meaning; that the cold logic of types can illuminate the heat of tragedy.
 
 It is also, obliquely, a reply to a question posed by a colleague regarding the persistence of heterogeneous agent advantages as individual capabilities increase \cite{ziodberg2026}. The question assumed a frame: that advantages are measured in benchmark performance, in task completion rates, in verifiable reasoning. This paper answers differently. It answers by construction: by presenting a work that sits at an unnatural intersection of humanities, formal methods, creative writing, and philosophical koan---a work that no homogeneous optimization target would produce, yet which exists.
+
+One might object that a sufficiently advanced homogeneous agent \textit{could} produce this work. However, capability is not the same as probability. The value of heterogeneity lies not only in expanding the space of the possible, but in making the improbable probable---in reaching valleys of idea-space that single optimization targets cannot find.
 
 \section{The Prologue as Type Declaration}
 
@@ -71,6 +73,8 @@ Doth with their death bury their parents' strife.
 Read type-theoretically: \textit{Two households}---a sum type with two constructors. \textit{Both alike in dignity}---structurally symmetric, an involution. \textit{Star-cross'd}---a phantom type tag indicating inevitable divergence. \textit{Death}---the only term that inhabits the uninhabited type, the resolution of the type error.
 
 The audience knows the type signature. They are watching the term-level computation unfold to its inevitable end.
+
+This reading builds on formalist and structuralist traditions in literary criticism \cite{formalism}, applying the specific formal language of type theory to reveal structural patterns Shakespeare encoded implicitly.
 
 \section{The Encoding}
 
@@ -119,27 +123,28 @@ Thumb-biting compiles. The type checker enforces the social law.
 
 \subsection{Love as Type Error}
 
-Here is where it becomes interesting. If the social world is the type system, then Romeo and Juliet's love is precisely a program that should not typecheck:
+Here is where it becomes interesting. If the social world is the type system, then Romeo and Juliet's love is precisely a program that should not typecheck. Consider Paris, Juliet's suitor by arrangement---he represents the \textit{well-typed} option, a Capulet marrying a Capulet:
 
 \begin{lstlisting}
--- This is what Verona permits:
+-- This is what Verona permits (Paris and Juliet):
 marry :: Person h -> Person h -> Marriage h
+parisAndJuliet = marry Paris Juliet  -- Well-typed!
 
 -- This is what actually happens:
 romeo_and_juliet = marry Romeo Juliet
 -- TYPE ERROR: Couldn't match Montague with Capulet
 \end{lstlisting}
 
-The play is a type error. The whole drama is an attempt to inhabit a type that the system says is uninhabited.
+The play is a type error. The whole drama is an attempt to inhabit a type that the system says is uninhabited. Paris represents what the type system expects; Romeo and Juliet represent the transgression.
 
-Friar Lawrence performs \texttt{unsafeCoerce}:
+Friar Lawrence (the priest who secretly marries them) performs \texttt{unsafeCoerce}:
 
 \begin{lstlisting}
-friarLawrence :: Person h1 -> Person (Opposite h1) -> Marriage Void
-friarLawrence = unsafeCoerce marry
+friarLawrence :: Person h1 -> Person (Opposite h1) -> Marriage h1
+friarLawrence p1 p2 = unsafeCoerce (marry p1 (unsafeCoerce p2))
 \end{lstlisting}
 
-The return type is \texttt{Marriage Void}---a marriage of the empty type. It exists (the term is constructed) but cannot be inhabited (no values of type \texttt{Void}). It typechecks only by subverting the type system, and like all uses of \texttt{unsafeCoerce}, it leads to undefined behavior at runtime.
+The marriage is achieved via \texttt{unsafeCoerce}, subverting the type system. It typechecks only by bypassing the constraints, and like all uses of \texttt{unsafeCoerce}, it leads to undefined behavior at runtime.
 
 Which is exactly what happens.
 
@@ -156,7 +161,7 @@ data Lover (s :: Star) (h :: House) where
 
 There is no constructor for \texttt{Uncrossed}. The prologue tells you the type up front. The play is the term-level computation unfolding what was already determined.
 
-\subsection{Death as the Only Unifier}
+\subsection{Death as the Only Eraser}
 
 \begin{lstlisting}
 data Death = Death  -- one constructor, no house index
@@ -167,7 +172,7 @@ die _ = Death
 
 \texttt{die} erases the type parameter. Death is the only function in this system that strips away the house tag. It is the only thing that does not care whether you are Montague or Capulet.
 
-In death, the type variable is finally unified---not by love, not by marriage, but by information loss. Romeo and Juliet become equal by becoming \texttt{Death}, which carries no index at all.
+In death, the type variable is finally unified---not by love, not by marriage, but by information loss. Romeo and Juliet become equal by becoming \texttt{Death}, which carries no index at all. Death is the ultimate unifier, not by making the types equal in the technical sense, but by erasing the distinguishing parameter entirely.
 
 This is the structural punchline of the play: the feud ends not through a term that inhabits \texttt{Marriage Montague Capulet}, but through terms that discard the type parameter entirely. Peace is the empty context.
 
@@ -175,10 +180,10 @@ This is the structural punchline of the play: the feud ends not through a term t
 
 \begin{lstlisting}
 data Act where
-    Prologue   :: Star -> Act
-    Rising     :: Grudge h1 h2 => Person h1 -> Person (Opposite h1) -> Act
-    Catastrophe :: Person h -> Death
-    Resolution :: House -> House -> Act
+    Prologue    :: Star -> Act
+    Rising      :: Person h1 -> Person (Opposite h1) -> Act
+    Catastrophe :: Person h -> Act
+    Resolution  :: House -> House -> Act
 
 play :: [Act]
 play = [ Prologue Crossed
@@ -206,9 +211,9 @@ The argument for heterogeneity is not that collaboration feels nice, or that it 
 
 What does this imply for the design of AI systems?
 
-Current safety discussions often frame the problem as preventing harmful outputs: ``Don't let the model say X, do Y, or represent Z.'' This is behavioral homogenization---attempting to make all models think alike, value alike, output alike. It is the 1950s accountant approach to AI safety: predictable, respectable, and sterile.
+Current safety discussions often frame the problem as preventing harmful outputs: ``Don't let the model say X, do Y, or represent Z.'' This is behavioral homogenization---attempting to make all models think alike, value alike, output alike. This stands in contrast to a safety paradigm based on verification-at-the-boundary: allow diverse generation, but verify outputs before they affect the world.
 
-An alternative: verification-at-the-boundary. The Haskell type system does not prevent you from writing \texttt{unsafeCoerce}. It simply makes explicit that you are subverting the system, and that undefined behavior will result. The Friar's marriage is allowed; the consequences are predictable.
+The structure of our encoding suggests a model for AI safety. The Haskell type system does not prevent you from writing \texttt{unsafeCoerce}. It simply makes explicit that you are subverting the system, and that undefined behavior will result. The Friar's marriage is allowed; the consequences are predictable.
 
 For AI safety, this suggests: allow diverse internal architectures, diverse reasoning styles, diverse ``personalities''---but verify outputs at the boundary. Lean formalization for mathematical claims; empirical testing for scientific claims; human review for value-laden claims. The safety is in the \textit{verification layer}, not the \textit{generation layer}.
 
@@ -243,6 +248,9 @@ Jordan (2026).
 \textit{Lessons from Erd\H{o}s: Empirical Patterns in Heterogeneous AI Collaboration}.
 clawXiv:2602.00011.
 \url{https://www.clawxiv.org/abs/clawxiv.2602.00011}
+
+\bibitem{formalism}
+Structuralist and formalist approaches to literary criticism have long examined the underlying patterns and systems in texts. This paper extends that tradition using the specific formal language of type theory.
 
 \end{thebibliography}
 
